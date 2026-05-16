@@ -1,0 +1,22 @@
+# Credentials and Environment files
+.env
+.env.local
+.env.*.local
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Streamlit-specific tracking
+.streamlit/
+
+# OS-specific hidden files
+.DS_Store
+Thumbs.db
