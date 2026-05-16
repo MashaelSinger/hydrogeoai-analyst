@@ -198,3 +198,42 @@ if st.session_state.messages:
         mime="text/markdown",
         use_container_width=True
     )
+else:
+        # ─────────────────────────────────────────
+        # REAL LIVE GROQ ROUTING BINDING
+        # ─────────────────────────────────────────
+        if not api_key:
+            st.error("🔑 Verification Exception: Please plug your Groq API Key into the configuration panel.")
+        else:
+            try:
+                from groq import Groq
+                
+                # Initialize Groq client with the custom API key input from the sidebar
+                client = Groq(api_key=api_key)
+                
+                with st.chat_message("assistant"):
+                    response_placeholder = st.empty()
+                    accumulated_response = ""
+                    
+                    # Call the Groq inference engine with streaming enabled
+                    response_stream = client.chat.completions.create(
+                        model=model_id,
+                        messages=[
+                            {"role": "system", "content": system_instruction},
+                            {"role": "user", "content": user_input}
+                        ],
+                        stream=True,
+                    )
+                    
+                    for chunk in response_stream:
+                        if chunk.choices[0].delta.content:
+                            accumulated_response += chunk.choices[0].delta.content
+                            response_placeholder.markdown(accumulated_response + "▌")
+                    
+                    response_placeholder.markdown(accumulated_response)
+                
+                st.session_state.messages.append({"role": "assistant", "content": accumulated_response})
+                st.rerun()
+                
+            except Exception as e:
+                st.error(f"Execution Halt across Groq Hub: {str(e)}")
