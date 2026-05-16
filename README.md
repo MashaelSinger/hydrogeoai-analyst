@@ -21,7 +21,7 @@ An advanced, multi-provider AI-powered spatial analytics dashboard designed to b
 ![HydroGeoAI Analyst Dashboard](screenshots/ast.png)
 
 ### Live Workflow Demonstration
-![Live Streaming & Routing Demo](screenshots/Video%20Project%202.mp4)
+![Live Streaming & Routing Demo](screenshots/second_edit.mp4)
 
 ---
 
