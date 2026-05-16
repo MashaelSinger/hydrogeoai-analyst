@@ -124,6 +124,7 @@ if clicked_preset_text:
     user_input = clicked_preset_text
 
 # ─────────────────────────────────────────
+# ─────────────────────────────────────────
 # STREAMING RESPONSES VIA LLM ENGINE
 # ─────────────────────────────────────────
 if user_input:
@@ -139,13 +140,10 @@ if user_input:
         else:
             genai.configure(api_key=api_key)
             try:
-                # Use generational mapping engine
                 model = genai.GenerativeModel(
                     model_name=model_id,
                     system_instruction=system_instruction
                 )
-                
-                # Setup payload package
                 payload = [user_input]
                 if uploaded_image_bytes:
                     payload.append({
@@ -156,8 +154,6 @@ if user_input:
                 with st.chat_message("assistant"):
                     response_placeholder = st.empty()
                     accumulated_response = ""
-                    
-                    # Compute chunk processing streams
                     response_stream = model.generate_content(payload, stream=True)
                     for chunk in response_stream:
                         accumulated_response += chunk.text
@@ -165,57 +161,24 @@ if user_input:
                     response_placeholder.markdown(accumulated_response)
                 
                 st.session_state.messages.append({"role": "assistant", "content": accumulated_response})
-                st.rerun() # Refresh layout metrics instantly
+                st.rerun()
                 
             except Exception as e:
                 st.error(f"Execution Halt across Gemini Hub: {str(e)}")
                 
     else:
-        # Placeholder indicator for cross-routing cloud solutions
-        st.warning(f"Simulating connection routing over alternative provider infrastructure: {provider_choice}. Upgrade endpoint bindings inside source dependencies.")
-        with st.chat_message("assistant"):
-            fallback_text = f"Simulated alternative response from model: {model_id}. Multi-provider route validated successfully."
-            st.markdown(fallback_text)
-        st.session_state.messages.append({"role": "assistant", "content": fallback_text})
-
-# ─────────────────────────────────────────
-# EXPORT MODULE (MARKDOWN DOWNLOADER)
-# ─────────────────────────────────────────
-if st.session_state.messages:
-    st.markdown("---")
-    
-    # Generate structured Markdown download package
-    markdown_buffer = io.StringIO()
-    markdown_buffer.write(f"# {APP_TITLE} Export Logs\n\n")
-    for msg in st.session_state.messages:
-        role_tag = "### 🧑 User Input" if msg["role"] == "user" else "### 🤖 Assistant Solution"
-        markdown_buffer.write(f"{role_tag}\n\n{msg['content']}\n\n---\n\n")
-        
-    st.download_button(
-        label="📥 Export Complete Chat Logs (.MD)",
-        data=markdown_buffer.getvalue(),
-        file_name="hydrogeo_session_export.md",
-        mime="text/markdown",
-        use_container_width=True
-    )
-else:
-        # ─────────────────────────────────────────
-        # REAL LIVE GROQ ROUTING BINDING
-        # ─────────────────────────────────────────
+        # ─── THIS IS THE EXACT BLOCK YOU NEED TO OVERWRITE ───
         if not api_key:
             st.error("🔑 Verification Exception: Please plug your Groq API Key into the configuration panel.")
         else:
             try:
                 from groq import Groq
-                
-                # Initialize Groq client with the custom API key input from the sidebar
                 client = Groq(api_key=api_key)
                 
                 with st.chat_message("assistant"):
                     response_placeholder = st.empty()
                     accumulated_response = ""
                     
-                    # Call the Groq inference engine with streaming enabled
                     response_stream = client.chat.completions.create(
                         model=model_id,
                         messages=[
@@ -229,7 +192,6 @@ else:
                         if chunk.choices[0].delta.content:
                             accumulated_response += chunk.choices[0].delta.content
                             response_placeholder.markdown(accumulated_response + "▌")
-                    
                     response_placeholder.markdown(accumulated_response)
                 
                 st.session_state.messages.append({"role": "assistant", "content": accumulated_response})
@@ -237,3 +199,23 @@ else:
                 
             except Exception as e:
                 st.error(f"Execution Halt across Groq Hub: {str(e)}")
+
+# ─────────────────────────────────────────
+# EXPORT MODULE (MARKDOWN DOWNLOADER)
+# ─────────────────────────────────────────
+if st.session_state.messages:
+    st.markdown("---")  # <-- Your lines live right here!
+    
+    markdown_buffer = io.StringIO()
+    markdown_buffer.write(f"# {APP_TITLE} Export Logs\n\n")
+    for msg in st.session_state.messages:
+        role_tag = "### 🧑 User Input" if msg["role"] == "user" else "### 🤖 Assistant Solution"
+        markdown_buffer.write(f"{role_tag}\n\n{msg['content']}\n\n---\n\n")
+        
+    st.download_button(
+        label="📥 Export Complete Chat Logs (.MD)",
+        data=markdown_buffer.getvalue(),
+        file_name="hydrogeo_session_export.md",
+        mime="text/markdown",
+        use_container_width=True
+    )
