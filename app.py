@@ -30,8 +30,6 @@ PROVIDERS = {
     },
     "Groq / OpenRouter Cloud": {
         "Llama 3.3 70B (Spatial)": "llama-3.3-70b-versatile",
-        "Mixtral 8x7B (Fast)": "mixtral-8x7b-32768",
-        "Gemma 2 9B (Lightweight)": "gemma2-9b-it"
     }
 }
 
